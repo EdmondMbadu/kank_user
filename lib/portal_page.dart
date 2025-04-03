@@ -6,180 +6,133 @@ class PortalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Sample data
-    final String name = "Masevo Konde";
-    final String memberSince = "01/10/2023";
-    final int creditScore = 330;
-    final double borrowed = 81.22;
-    final double paid = 40.22;
-    final double difference = 41.00;
-    final double minPayment = 6.09;
-    final String dueDate = "10 Aug";
+    final String remainingBalance = "12,000 CDF";
+    final String amountDue = "50,000 CDF";
+    final String savings = "5,000 CDF";
+    final String minPayment = "10,000 CDF (20 Mars)";
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Ebaboli",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          // Big rounded container with bright green background
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(24),
+      // We could omit an AppBar if we want the card to stand alone,
+      // but let's keep it or remove as you see fit:
+      appBar: AppBar(title: const Text("Ebaboli"), centerTitle: true),
+      body: Center(
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Name & Member Since
-              Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          // The entire card is green
+          color: Theme.of(context).colorScheme.primary,
+          child: Container(
+            width: 320,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title: "Solde Ebotami" or "Remaining Balance"
+                const Text(
+                  "Solde Ebotami",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white70,
+                  ),
                 ),
-              ),
-              Text(
-                "Membre banda $memberSince",
-                style: const TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 8),
+                // The main large price
+                Text(
+                  remainingBalance,
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
 
-              // Info grid
-              Wrap(
-                spacing: 24,
-                runSpacing: 16,
-                children: [
-                  _infoItem("Score ya Crédit", "$creditScore", context),
-                  _infoItem(
-                    "Mbongo ezwama",
-                    "\$${borrowed.toStringAsFixed(2)}",
-                    context,
-                  ),
-                  _infoItem(
-                    "Mbongo efutami",
-                    "\$${paid.toStringAsFixed(2)}",
-                    context,
-                  ),
-                  _infoItem(
-                    "Ndenge",
-                    "\$${difference.toStringAsFixed(2)}",
-                    context,
-                  ),
-                  _infoItem(
-                    "Futa ya Min.",
-                    "\$${minPayment.toStringAsFixed(2)}",
-                    context,
-                  ),
-                  _infoItem("Daté ya kofuta", dueDate, context),
-                ],
-              ),
+                // The 3 items: Amount Due, Savings, Min Payment
+                // We can show them as bullet points or check icons
+                _buildFeatureRow(
+                  icon: Icons.error_outline_rounded,
+                  text: "Mbongo ya kofuta : $amountDue",
+                  context: context,
+                  iconColor: Colors.redAccent,
+                  textColor: Colors.white,
+                  fontSize: 18,
+                ),
+                const SizedBox(height: 8),
+                _buildFeatureRow(
+                  icon: Icons.savings_outlined,
+                  text: "Bosombi : $savings",
+                  context: context,
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  fontSize: 18,
+                ),
+                const SizedBox(height: 8),
+                _buildFeatureRow(
+                  icon: Icons.notifications_active_rounded,
+                  text: "Futa ya Min. : $minPayment",
+                  context: context,
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  fontSize: 18,
+                ),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 32),
-              // Buttons row
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.primary,
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () => Navigator.pushNamed(context, '/history'),
-                      child: const Text(
-                        "Misala",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.green[500],
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () => Navigator.pushNamed(context, '/payment'),
-                      child: const Text(
-                        "Futa",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Help link
-              Center(
-                child: ElevatedButton(
+                // Action button
+                ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.green[500],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 14,
                     ),
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/help'),
+                  onPressed: () {
+                    // For instance, navigate to Payment, or show details, etc.
+                    Navigator.pushNamed(context, '/payment');
+                  },
                   child: const Text(
-                    "Lisungi",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                    ),
+                    "Futa Sikoyo",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _infoItem(String label, String value, BuildContext context) {
-    return SizedBox(
-      width: 120,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: Colors.white70),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+  Widget _buildFeatureRow({
+    required IconData icon,
+    required String text,
+    required BuildContext context,
+    Color? iconColor,
+    Color? textColor,
+    double fontSize = 16,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, color: iconColor ?? Colors.white, size: 22),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: fontSize,
+              color: textColor ?? Colors.white,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// Import the four pages
+import 'home_page.dart';
 import 'portal_page.dart';
 import 'payment_page.dart';
 import 'payment_history_page.dart';
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // "CashApp-like" bright green color
+    // CashApp-like bright green color
     const primaryGreen = Color(0xFF00D26A);
 
     return MaterialApp(
@@ -38,7 +38,8 @@ class MyApp extends StatelessWidget {
       // Named routes for easy navigation
       initialRoute: '/',
       routes: {
-        '/': (context) => const PortalPage(),
+        '/': (context) => const HomePage(), // bottom nav home
+        '/portal': (context) => const PortalPage(),
         '/payment': (context) => const PaymentPage(),
         '/history': (context) => const PaymentHistoryPage(),
         '/help': (context) => const HelpPage(),

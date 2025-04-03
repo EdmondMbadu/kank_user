@@ -11,7 +11,7 @@ class HelpPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Lobisa (Help)",
+          "Lisungi",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -29,7 +29,7 @@ class HelpPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  "Soki osengi lisalisi, benga biso na:",
+                  "Soki osengi lisalisi, benga biso:",
                   style: TextStyle(fontSize: 17),
                   textAlign: TextAlign.center,
                 ),

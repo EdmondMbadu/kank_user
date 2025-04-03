@@ -19,7 +19,7 @@ class PaymentHistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Misala ya kofuta",
+          "Histoire ya Paiement",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -49,7 +49,7 @@ class PaymentHistoryPage extends StatelessWidget {
               },
             ),
           ),
-          // Fake pagination
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -78,7 +78,7 @@ class PaymentHistoryPage extends StatelessWidget {
             ),
             onPressed: () => Navigator.pop(context),
             child: const Text(
-              "Kanga", // Close
+              "Kanga", // "Close"
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),

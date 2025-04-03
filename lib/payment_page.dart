@@ -16,13 +16,7 @@ class _PaymentPageState extends State<PaymentPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Futa Mbongo",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Futa Mbongo"), centerTitle: true),
       body: Center(
         child: Card(
           elevation: 6,
@@ -119,7 +113,6 @@ class _PaymentPageState extends State<PaymentPage> {
                         ),
                         onPressed: () {
                           // TODO: handle submission
-                          // e.g., validate & send data to server
                         },
                         child: const Text(
                           "Tínda", // Submit
