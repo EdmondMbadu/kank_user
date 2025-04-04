@@ -4,6 +4,7 @@ import 'portal_page.dart';
 import 'payment_page.dart';
 import 'payment_history_page.dart';
 import 'help_page.dart';
+import 'profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/payment': (context) => const PaymentPage(),
         '/history': (context) => const PaymentHistoryPage(),
         '/help': (context) => const HelpPage(),
+        '/profile': (context) => const ProfilePage(), // new profile route
       },
     );
   }

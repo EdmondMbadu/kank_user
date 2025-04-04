@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'portal_page.dart';
 import 'payment_history_page.dart';
 import 'help_page.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,10 +14,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
+  // We now have 4 tabs:
   final List<Widget> _pages = const [
-    PortalPage(),
-    PaymentHistoryPage(),
-    HelpPage(),
+    PortalPage(), // index 0
+    PaymentHistoryPage(), // index 1
+    HelpPage(), // index 2
+    ProfilePage(), // index 3 (new)
   ];
 
   void _onItemTapped(int index) {
@@ -44,6 +47,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.help_outline),
             label: "Lisungi",
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Compte"),
         ],
       ),
     );

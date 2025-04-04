@@ -23,10 +23,10 @@ class PortalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Sample data
-    final String remainingBalance = "12,000 CDF";
-    final String amountDue = "50,000 CDF";
-    final String savings = "5,000 CDF";
-    final String minPayment = "10,000 CDF (20 Mars)";
+    final String remainingBalance = "12,000 FC";
+    final String amountDue = "50,000 FC";
+    final String savings = "5,000 FC";
+    final String minPayment = "10,000 FC (20 Mars)";
     final int creditScore = 90; // e.g., range from 0-100 or 0-999
 
     return Scaffold(
@@ -92,7 +92,7 @@ class PortalPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      "Solde Ebotami",
+                      "Niongo",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -114,32 +114,32 @@ class PortalPage extends StatelessWidget {
                     // Amount Due
                     _buildFeatureRow(
                       icon: Icons.error_outline_rounded,
-                      text: "Mbongo ya kofuta : $amountDue",
+                      text: "Paiement Prochain : $amountDue",
                       context: context,
                       iconColor: Colors.redAccent,
-                      fontSize: 18,
+                      fontSize: 22,
                     ),
                     const SizedBox(height: 8),
-
                     // Savings
                     _buildFeatureRow(
                       icon: Icons.savings_outlined,
-                      text: "Bosombi : $savings",
+                      text: "Epargnes : $savings",
                       context: context,
                       iconColor: Colors.white,
-                      fontSize: 18,
+                      fontSize: 22,
                     ),
+                    Container(padding: const EdgeInsets.only(bottom: 16)),
                     const SizedBox(height: 8),
 
                     // Minimum Payment
-                    _buildFeatureRow(
-                      icon: Icons.notifications_active_rounded,
-                      text: "Futa ya Min. : $minPayment",
-                      context: context,
-                      iconColor: Colors.white,
-                      fontSize: 18,
-                    ),
-                    const SizedBox(height: 24),
+                    // _buildFeatureRow(
+                    //   icon: Icons.notifications_active_rounded,
+                    //   text: "Mbongo ya . : $minPayment",
+                    //   context: context,
+                    //   iconColor: Colors.white,
+                    //   fontSize: 18,
+                    // ),
+                    // const SizedBox(height: 24),
 
                     // Action button
                     ElevatedButton(
