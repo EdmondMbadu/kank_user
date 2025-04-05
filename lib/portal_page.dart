@@ -30,7 +30,22 @@ class PortalPage extends StatelessWidget {
     final int creditScore = 90; // e.g., range from 0-100 or 0-999
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Ebaboli"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          "Fondation Gervais",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              // Navigate back to the login page
+              Navigator.pushReplacementNamed(context, '/');
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -114,12 +129,13 @@ class PortalPage extends StatelessWidget {
                     // Amount Due
                     _buildFeatureRow(
                       icon: Icons.error_outline_rounded,
-                      text: "Paiement Prochain : $amountDue",
+                      text: "Paiement : $amountDue",
                       context: context,
                       iconColor: Colors.redAccent,
-                      fontSize: 22,
+                      fontSize: 24,
                     ),
                     const SizedBox(height: 8),
+
                     // Savings
                     _buildFeatureRow(
                       icon: Icons.savings_outlined,
@@ -131,7 +147,7 @@ class PortalPage extends StatelessWidget {
                     Container(padding: const EdgeInsets.only(bottom: 16)),
                     const SizedBox(height: 8),
 
-                    // Minimum Payment
+                    // Minimum Payment (commented out in your original snippet)
                     // _buildFeatureRow(
                     //   icon: Icons.notifications_active_rounded,
                     //   text: "Mbongo ya . : $minPayment",

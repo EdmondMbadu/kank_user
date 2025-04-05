@@ -5,6 +5,7 @@ import 'payment_page.dart';
 import 'payment_history_page.dart';
 import 'help_page.dart';
 import 'profile_page.dart';
+import 'login_page.dart'; // import our new LoginPage
 
 void main() {
   runApp(const MyApp());
@@ -36,15 +37,16 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      // Named routes for easy navigation
+      // Set the LoginPage as the initial route
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomePage(), // bottom nav home
+        '/': (context) => const LoginPage(),
+        '/home': (context) => const HomePage(), // your existing bottom nav
         '/portal': (context) => const PortalPage(),
         '/payment': (context) => const PaymentPage(),
         '/history': (context) => const PaymentHistoryPage(),
         '/help': (context) => const HelpPage(),
-        '/profile': (context) => const ProfilePage(), // new profile route
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }
