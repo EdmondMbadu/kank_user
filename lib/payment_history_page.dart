@@ -5,6 +5,12 @@ class PaymentHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void _home() {
+      // TODO: Implement your real login logic here.
+      // For now, just navigate to HomePage.
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+
     // Example data
     final List<Map<String, String>> customers = [
       {"name": "Neil Sims", "email": "email@windster.com", "amount": "\$320"},
@@ -60,9 +66,7 @@ class PaymentHistoryPage extends StatelessWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            // TODO: “View all” action
-                          },
+                          onPressed: _home,
                           child: const Text("View all"),
                         ),
                       ],
@@ -118,9 +122,7 @@ class PaymentHistoryPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: () {
-                  // TODO: go to previous page
-                },
+                onPressed: _home,
                 icon: const Icon(Icons.chevron_left),
               ),
               const Text(
@@ -128,9 +130,7 @@ class PaymentHistoryPage extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               IconButton(
-                onPressed: () {
-                  // TODO: go to next page
-                },
+                onPressed: _home,
                 icon: const Icon(Icons.chevron_right),
               ),
             ],
@@ -143,10 +143,10 @@ class PaymentHistoryPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: _home,
             child: const Text(
               "Kanga",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

@@ -5,6 +5,12 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void _home() {
+      // TODO: Implement your real login logic here.
+      // For now, just navigate to HomePage.
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+
     // Replace with your actual phone number
     const String phoneNumber = "+243 123 456 789";
 
@@ -45,7 +51,7 @@ class HelpPage extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -54,7 +60,7 @@ class HelpPage extends StatelessWidget {
                       vertical: 14,
                     ),
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: _home,
                   child: const Text(
                     "Kanga",
                     style: TextStyle(fontWeight: FontWeight.bold),

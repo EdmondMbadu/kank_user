@@ -132,7 +132,7 @@ class PortalPage extends StatelessWidget {
                       text: "Paiement : $amountDue",
                       context: context,
                       iconColor: Colors.redAccent,
-                      fontSize: 24,
+                      fontSize: 20,
                     ),
                     const SizedBox(height: 8),
 
@@ -142,7 +142,7 @@ class PortalPage extends StatelessWidget {
                       text: "Epargnes : $savings",
                       context: context,
                       iconColor: Colors.white,
-                      fontSize: 22,
+                      fontSize: 20,
                     ),
                     Container(padding: const EdgeInsets.only(bottom: 16)),
                     const SizedBox(height: 8),
