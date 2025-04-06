@@ -25,12 +25,12 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Forgot Password'),
-            content: const Text('Password reset instructions go here.'),
+            title: const Text('Obosani code?'),
+            content: const Text('Benga biso na numero ya tel: 0994385299'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                child: const Text('Kanga'),
               ),
             ],
           ),
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'Username',
+                    labelText: 'Telephone (099438529)',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Code',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -120,11 +120,11 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     TextButton(
                       onPressed: _forgotPassword,
-                      child: const Text('Forgot Password?'),
+                      child: const Text('Obosani code?'),
                     ),
                     TextButton(
                       onPressed: _registerNewUser,
-                      child: const Text('Register'),
+                      child: const Text('Komisa na biso'),
                     ),
                   ],
                 ),

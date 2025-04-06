@@ -220,7 +220,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 16),
 
                 // Name (read-only)
-                _buildReadOnlyField("Nkombo (Name)", _client.name),
+                _buildReadOnlyField("Nkombo", _client.name),
                 const Divider(height: 32),
 
                 // Phone (editable if _isEditing = true)

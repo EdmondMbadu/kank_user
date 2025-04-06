@@ -50,6 +50,26 @@ class PortalPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Greeting
+            RichText(
+              text: TextSpan(
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.copyWith(fontSize: 20, color: Colors.black),
+                children: [
+                  const TextSpan(text: "Mbote, "),
+                  TextSpan(
+                    text: "Edmond.",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
             // Credit Score Circle + Label
             Column(
               children: [
@@ -144,18 +164,7 @@ class PortalPage extends StatelessWidget {
                       iconColor: Colors.white,
                       fontSize: 20,
                     ),
-                    Container(padding: const EdgeInsets.only(bottom: 16)),
                     const SizedBox(height: 8),
-
-                    // Minimum Payment (commented out in your original snippet)
-                    // _buildFeatureRow(
-                    //   icon: Icons.notifications_active_rounded,
-                    //   text: "Mbongo ya . : $minPayment",
-                    //   context: context,
-                    //   iconColor: Colors.white,
-                    //   fontSize: 18,
-                    // ),
-                    // const SizedBox(height: 24),
 
                     // Action button
                     ElevatedButton(
