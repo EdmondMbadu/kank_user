@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     onPressed: _login,
-                    child: const Text('Login', style: TextStyle(fontSize: 18)),
+                    child: const Text('Kota', style: TextStyle(fontSize: 18)),
                   ),
                 ),
 

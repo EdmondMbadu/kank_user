@@ -23,10 +23,9 @@ class PortalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Sample data
-    final String remainingBalance = "12,000 FC";
-    final String amountDue = "50,000 FC";
-    final String savings = "5,000 FC";
-    final String minPayment = "10,000 FC (20 Mars)";
+    final String remainingBalance = "280,000 FC";
+    final String savings = "60,000 FC";
+    final String minPayment = "35,000 FC";
     final int creditScore = 90; // e.g., range from 0-100 or 0-999
 
     return Scaffold(
@@ -47,151 +46,129 @@ class PortalPage extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Greeting
-            RichText(
-              text: TextSpan(
-                style: DefaultTextStyle.of(
-                  context,
-                ).style.copyWith(fontSize: 20, color: Colors.black),
-                children: [
-                  const TextSpan(text: "Mbote, "),
-                  TextSpan(
-                    text: "Edmond.",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Credit Score Circle + Label
-            Column(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    // Dynamically color the circle:
-                    color: _getScoreColor(creditScore),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 8,
-                        offset: const Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      "$creditScore",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // White text for contrast
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                // The label: “Score Crédit”
-                const Text(
-                  "Score Crédit",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Main Green Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              color: Theme.of(context).colorScheme.primary, // bright green
-              child: Container(
-                width: 320,
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Greeting
+              RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(
+                    context,
+                  ).style.copyWith(fontSize: 20, color: Colors.black),
                   children: [
-                    const Text(
-                      "Niongo",
+                    const TextSpan(text: "Mbote, "),
+                    TextSpan(
+                      text: "Edmond.",
                       style: TextStyle(
-                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Big Remaining Balance
-                    Text(
-                      remainingBalance,
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Amount Due
-                    _buildFeatureRow(
-                      icon: Icons.error_outline_rounded,
-                      text: "Paiement : $amountDue",
-                      context: context,
-                      iconColor: Colors.redAccent,
-                      fontSize: 20,
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Savings
-                    _buildFeatureRow(
-                      icon: Icons.savings_outlined,
-                      text: "Epargnes : $savings",
-                      context: context,
-                      iconColor: Colors.white,
-                      fontSize: 20,
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Action button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Theme.of(context).colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 14,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/payment');
-                      },
-                      child: const Text(
-                        "Futa Sikoyo",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
                       ),
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 20),
+
+              // Credit Score Circle + Label
+              Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      // Dynamically color the circle:
+                      color: _getScoreColor(creditScore),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        "$creditScore",
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // White text for contrast
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // The label: “Score Crédit”
+                  const Text(
+                    "Score Crédit",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Card 1: Niongo (Debt)
+              _buildInfoCard(
+                context,
+                title: "Niongo Nionso",
+                amount: remainingBalance,
+                // Optionally include an icon or subtext inside if you like
+              ),
+              const SizedBox(height: 16),
+
+              // Card 2: Epargnes (Savings)
+              _buildInfoCard(context, title: "Epargnes", amount: savings),
+              const SizedBox(height: 16),
+
+              // Card 3: Next Payment (Niongo ya kofuta le ...)
+              _buildNextPaymentCard(
+                context,
+                title: "Niongo ya kofuta le (20 Mars)",
+                amount: minPayment,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Reusable card for Niongo / Epargnes
+  Widget _buildInfoCard(
+    BuildContext context, {
+    required String title,
+    required String amount,
+  }) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Theme.of(context).colorScheme.primary, // bright green
+      child: Container(
+        width: 300,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              amount,
+              style: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ],
@@ -200,25 +177,64 @@ class PortalPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureRow({
-    required IconData icon,
-    required String text,
-    required BuildContext context,
-    Color? iconColor,
-    double fontSize = 16,
+  /// Next Payment Card with "Futa Sikoyo" button
+  Widget _buildNextPaymentCard(
+    BuildContext context, {
+    required String title,
+    required String amount,
   }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(icon, color: iconColor ?? Colors.white, size: 22),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: fontSize, color: Colors.white),
-          ),
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Theme.of(context).colorScheme.primary, // bright green
+      child: Container(
+        width: 300,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              amount,
+              style: const TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // "Futa Sikoyo" action button
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 14,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/payment');
+              },
+              child: const Text(
+                "Futa Sikoyo",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
