@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "940518039240",
+    "project_id": "kank-4bbbc",
+    "storage_bucket": "kank-4bbbc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940518039240:android:ad62f43bbfd5db70ebcffd",
+        "android_client_info": {
+          "package_name": "com.example.kank_user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAr7aPW6-7qQFA-GU6uQxyTsg6aKQGmzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

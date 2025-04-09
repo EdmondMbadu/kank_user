@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,15 +12,94 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _login() {
-    // TODO: Implement your real login logic here.
-    // For now, just navigate to HomePage.
-    Navigator.pushReplacementNamed(context, '/home');
+  /// Attempt to login by phone number
+  Future<void> _login() async {
+    final phone = _usernameController.text.trim();
+
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a phone number')),
+      );
+      return;
+    }
+
+    print('Attempting to fetch client with phoneNumber == $phone');
+
+    try {
+      // Use collectionGroup if data is in sub-collections "users/{uid}/clients"
+      final querySnapshot =
+          await FirebaseFirestore.instance
+              .collectionGroup('clients')
+              .where('phoneNumber', isEqualTo: phone)
+              .limit(1)
+              .get();
+
+      print('Phone query returned ${querySnapshot.docs.length} doc(s).');
+      for (var doc in querySnapshot.docs) {
+        print('Doc ID: ${doc.id} => ${doc.data()}');
+      }
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final clientDoc = querySnapshot.docs.first;
+        final clientData = clientDoc.data();
+
+        // Navigate to PortalPage (or HomePage) with the clientData
+        Navigator.pushReplacementNamed(
+          context,
+          '/portal',
+          arguments: clientData,
+        );
+      } else {
+        print('No client found with that phone. Trying a random fetch...');
+        final testSnapshot =
+            await FirebaseFirestore.instance
+                .collectionGroup('clients')
+                .limit(1)
+                .get();
+
+        print('Random fetch returned ${testSnapshot.docs.length} doc(s).');
+        if (testSnapshot.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No matching phone, but Firestore has data.'),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No data in "clients" at all.')),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error during Firestore query: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  /// Debug: Write a test doc to a top-level `testCollection`
+  Future<void> _createTestDoc() async {
+    print("Creating test document...");
+    try {
+      final ref = FirebaseFirestore.instance.collection('testCollection').doc();
+      await ref.set({
+        'message': 'Hi from the Flutter app!',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      print('Wrote doc ${ref.id} to testCollection.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Created doc ${ref.id} in testCollection!')),
+      );
+    } catch (e) {
+      print('Error writing doc: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error writing doc: $e')));
+    }
   }
 
   void _forgotPassword() {
-    // TODO: Navigate to a proper Forgot Password page or dialog.
-    // For demonstration, show a simple dialog or do nothing here.
     showDialog(
       context: context,
       builder:
@@ -38,8 +117,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _registerNewUser() {
-    // TODO: Navigate to a proper Register page.
-    // For demonstration, show a simple dialog or do nothing here.
     showDialog(
       context: context,
       builder:
@@ -58,7 +135,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // CashApp-like bright green color
     const primaryGreen = Color(0xFF00D26A);
 
     return Scaffold(
@@ -74,11 +150,11 @@ class _LoginPageState extends State<LoginPage> {
                 Image.asset('assets/fondation-gervais-logo.jpeg', height: 120),
                 const SizedBox(height: 24),
 
-                // Username Field
+                // Phone # Field
                 TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'Telephone (099438529)',
+                    labelText: 'Telephone (ex: +243123456789)',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -111,8 +187,14 @@ class _LoginPageState extends State<LoginPage> {
                     child: const Text('Kota', style: TextStyle(fontSize: 18)),
                   ),
                 ),
+                const SizedBox(height: 20),
 
-                const SizedBox(height: 12),
+                // Debug: Write test doc
+                ElevatedButton(
+                  onPressed: _createTestDoc,
+                  child: const Text('Debug: Write Test Doc'),
+                ),
+                const SizedBox(height: 20),
 
                 // Forgot password & Register links
                 Row(

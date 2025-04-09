@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart'; // <-- import
+import 'firebase_options.dart'; // <-- import
 import 'home_page.dart';
 import 'portal_page.dart';
 import 'payment_page.dart';
 import 'payment_history_page.dart';
 import 'help_page.dart';
 import 'profile_page.dart';
-import 'login_page.dart'; // import our new LoginPage
+import 'login_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase using the FlutterFire CLI-generated options
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const MyApp());
 }
 
@@ -37,11 +44,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      // Set the LoginPage as the initial route
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginPage(),
-        '/home': (context) => const HomePage(), // your existing bottom nav
+        '/home': (context) => const HomePage(),
         '/portal': (context) => const PortalPage(),
         '/payment': (context) => const PaymentPage(),
         '/history': (context) => const PaymentHistoryPage(),

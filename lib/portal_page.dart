@@ -3,7 +3,30 @@ import 'package:flutter/material.dart';
 class PortalPage extends StatelessWidget {
   const PortalPage({Key? key}) : super(key: key);
 
-  // Helper function to map credit score to a specific color range
+  // Helper: parse an int from dynamic (handles int or string)
+  int _asInt(dynamic value, [int defaultValue = 0]) {
+    if (value == null) return defaultValue;
+    if (value is int) return value; // Already an int
+    if (value is String) {
+      return int.tryParse(value) ?? defaultValue;
+    }
+    // If it's something else (double, bool, etc.), fallback
+    return defaultValue;
+  }
+
+  // Helper: parse a double from dynamic (handles int, double, or string)
+  double _asDouble(dynamic value, [double defaultValue = 0.0]) {
+    if (value == null) return defaultValue;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? defaultValue;
+    }
+    // If it's something else, fallback
+    return defaultValue;
+  }
+
+  // Helper to map credit score to a specific color range
   Color _getScoreColor(int value) {
     if (value < 50) {
       return const Color.fromRGBO(255, 0, 0, 1); // red
@@ -22,11 +45,32 @@ class PortalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample data
-    final String remainingBalance = "280,000 FC";
-    final String savings = "60,000 FC";
-    final String minPayment = "35,000 FC";
-    final int creditScore = 90; // e.g., range from 0-100 or 0-999
+    // 1) Grab the client doc data from the route arguments
+    final Map<String, dynamic>? clientData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    // 2) Safely extract fields
+    final firstName = clientData?['firstName'] ?? '';
+    final lastName = clientData?['lastName'] ?? '';
+
+    final creditScore = _asInt(clientData?['creditScore'], 50);
+
+    final amountToPay = _asDouble(clientData?['amountToPay'], 0.0);
+    final savingsVal = _asDouble(clientData?['savings'], 0.0);
+
+    // Payment period range might be string or int
+    final paymentPeriod = _asDouble(clientData?['paymentPeriodRange'], 1.0);
+
+    // Min payment = total debt / paymentPeriod
+    final double minPaymentVal = // Explicit type can also help clarity
+        (paymentPeriod == 0) ? 0.0 : amountToPay / paymentPeriod;
+
+    // Format for display
+    final debtLeftText =
+        '${_formatNumber(amountToPay)} FC'; // Also use interpolation here
+    final savingsText = '${_formatNumber(savingsVal)} FC'; // And here
+    // FIX 2: Use string interpolation instead of +
+    final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +83,7 @@ class PortalPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              // Navigate back to the login page
+              // Navigate back to login
               Navigator.pushReplacementNamed(context, '/');
             },
           ),
@@ -50,7 +94,7 @@ class PortalPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Greeting
+              // Greeting: "Mbote, {firstName lastName}"
               RichText(
                 text: TextSpan(
                   style: DefaultTextStyle.of(
@@ -59,7 +103,7 @@ class PortalPage extends StatelessWidget {
                   children: [
                     const TextSpan(text: "Mbote, "),
                     TextSpan(
-                      text: "Edmond.",
+                      text: "$firstName $lastName",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -70,14 +114,13 @@ class PortalPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Credit Score Circle + Label
+              // Credit Score Circle
               Column(
                 children: [
                   Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      // Dynamically color the circle:
                       color: _getScoreColor(creditScore),
                       shape: BoxShape.circle,
                       boxShadow: [
@@ -94,13 +137,12 @@ class PortalPage extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, // White text for contrast
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 6),
-                  // The label: “Score Crédit”
                   const Text(
                     "Score Crédit",
                     style: TextStyle(
@@ -113,24 +155,23 @@ class PortalPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Card 1: Niongo (Debt)
+              // Card 1: Niongo Nionso (debt)
               _buildInfoCard(
                 context,
                 title: "Niongo Nionso",
-                amount: remainingBalance,
-                // Optionally include an icon or subtext inside if you like
+                amount: debtLeftText,
               ),
               const SizedBox(height: 16),
 
-              // Card 2: Epargnes (Savings)
-              _buildInfoCard(context, title: "Epargnes", amount: savings),
+              // Card 2: Epargnes (savings)
+              _buildInfoCard(context, title: "Epargnes", amount: savingsText),
               const SizedBox(height: 16),
 
-              // Card 3: Next Payment (Niongo ya kofuta le ...)
+              // Card 3: Next Payment
               _buildNextPaymentCard(
                 context,
-                title: "Niongo ya kofuta le (20 Mars)",
-                amount: minPayment,
+                title: "Niongo ya kofuta le ...",
+                amount: minPaymentText,
               ),
             ],
           ),
@@ -139,7 +180,7 @@ class PortalPage extends StatelessWidget {
     );
   }
 
-  /// Reusable card for Niongo / Epargnes
+  /// Reusable card
   Widget _buildInfoCard(
     BuildContext context, {
     required String title,
@@ -148,7 +189,7 @@ class PortalPage extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Theme.of(context).colorScheme.primary, // bright green
+      color: Theme.of(context).colorScheme.primary,
       child: Container(
         width: 300,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
@@ -177,7 +218,7 @@ class PortalPage extends StatelessWidget {
     );
   }
 
-  /// Next Payment Card with "Futa Sikoyo" button
+  /// Next Payment Card
   Widget _buildNextPaymentCard(
     BuildContext context, {
     required String title,
@@ -186,7 +227,7 @@ class PortalPage extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Theme.of(context).colorScheme.primary, // bright green
+      color: Theme.of(context).colorScheme.primary,
       child: Container(
         width: 300,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
@@ -210,8 +251,6 @@ class PortalPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
-            // "Futa Sikoyo" action button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -235,6 +274,16 @@ class PortalPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  /// Quick number formatter
+  String _formatNumber(double value) {
+    // In real apps, prefer using package:intl => NumberFormat("#,###").format(value)
+    final str = value.toStringAsFixed(0);
+    return str.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]},',
     );
   }
 }
