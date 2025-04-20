@@ -1,53 +1,48 @@
 import 'package:flutter/material.dart';
+
 import 'portal_page.dart';
 import 'payment_history_page.dart';
 import 'help_page.dart';
 import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final Map<String, dynamic> clientData;
+  const HomePage({required this.clientData, Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int _currentIndex = 0;
 
-  // We now have 4 tabs:
-  final List<Widget> _pages = const [
-    PortalPage(), // index 0
-    PaymentHistoryPage(), // index 1
-    HelpPage(), // index 2
-    ProfilePage(), // index 3 (new)
+  late final List<Widget> _tabs = [
+    PortalPage(clientData: widget.clientData),
+    const PaymentHistoryPage(),
+    const HelpPage(),
+    ProfilePage(clientData: widget.clientData),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(index: _currentIndex, children: _tabs),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        currentIndex: _currentIndex,
+        onTap: (i) => setState(() => _currentIndex = i),
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'General'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: "Futa",
+            icon: Icon(Icons.payment),
+            label: 'Paiements',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "Histoire"),
           BottomNavigationBarItem(
             icon: Icon(Icons.help_outline),
-            label: "Lisungi",
+            label: 'Lisungi',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Compte"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );

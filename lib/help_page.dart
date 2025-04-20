@@ -1,3 +1,5 @@
+// help_page.dart
+
 import 'package:flutter/material.dart';
 
 class HelpPage extends StatelessWidget {
@@ -5,19 +7,12 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _home() {
-      // TODO: Implement your real login logic here.
-      // For now, just navigate to HomePage.
-      Navigator.pushReplacementNamed(context, '/home');
-    }
-
-    // Replace with your actual phone number
-    const String phoneNumber = "+243 123 456 789";
+    const phoneNumber = "+243 123 456 789";
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Lisungi",
+          'Lisungi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -35,7 +30,7 @@ class HelpPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  "Soki osengi lisalisi, benga biso:",
+                  'Soki osengi lisalisi, benga biso:',
                   style: TextStyle(fontSize: 17),
                   textAlign: TextAlign.center,
                 ),
@@ -52,17 +47,23 @@ class HelpPage extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 40,
                       vertical: 14,
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                   ),
-                  onPressed: _home,
+                  onPressed: () {
+                    // If you want to switch back to the first tab,
+                    // you can pop & let HomePage show index=0,
+                    // or use a callback to set HomePage's index.
+                    Navigator.of(context).pop();
+                  },
                   child: const Text(
-                    "Kanga",
+                    'Kanga',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

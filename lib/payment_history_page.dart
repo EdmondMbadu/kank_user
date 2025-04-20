@@ -5,14 +5,7 @@ class PaymentHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _home() {
-      // TODO: Implement your real login logic here.
-      // For now, just navigate to HomePage.
-      Navigator.pushReplacementNamed(context, '/home');
-    }
-
-    // Example data
-    final List<Map<String, String>> customers = [
+    final customers = [
       {"name": "Neil Sims", "email": "email@windster.com", "amount": "\$320"},
       {
         "name": "Bonnie Green",
@@ -35,16 +28,15 @@ class PaymentHistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Histoire ya Paiement",
+          'Histoire ya Paiement',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          // “Latest Customers” box
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.all(16),
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -52,57 +44,52 @@ class PaymentHistoryPage extends StatelessWidget {
               elevation: 2,
               child: Column(
                 children: [
-                  // Header Row
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          "Latest Customers",
+                          'Latest Customers',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextButton(
-                          onPressed: _home,
-                          child: const Text("View all"),
+                          onPressed: () {},
+                          child: const Text('View all'),
                         ),
                       ],
                     ),
                   ),
                   const Divider(height: 1),
-
-                  // List of customers
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: customers.length,
-                    separatorBuilder:
-                        (context, index) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final data = customers[index];
-                      final name = data["name"] ?? "";
-                      final email = data["email"] ?? "";
-                      final amount = data["amount"] ?? "";
-
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (ctx, i) {
+                      final c = customers[i];
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor:
                               Theme.of(context).colorScheme.primary,
                           child: Text(
-                            name.isNotEmpty ? name[0] : "?",
+                            c["name"]![0],
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
-                        title: Text(name, style: const TextStyle(fontSize: 14)),
+                        title: Text(
+                          c["name"]!,
+                          style: const TextStyle(fontSize: 14),
+                        ),
                         subtitle: Text(
-                          email,
+                          c["email"]!,
                           style: const TextStyle(fontSize: 12),
                         ),
                         trailing: Text(
-                          amount,
+                          c["amount"]!,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -116,43 +103,35 @@ class PaymentHistoryPage extends StatelessWidget {
               ),
             ),
           ),
-
-          // Pagination
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: _home,
-                icon: const Icon(Icons.chevron_left),
-              ),
-              const Text(
-                "1  |  2  |  3  ...",
+            children: const [
+              Icon(Icons.chevron_left),
+              SizedBox(width: 8),
+              Text(
+                '1  |  2  |  3  ...',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              IconButton(
-                onPressed: _home,
-                icon: const Icon(Icons.chevron_right),
-              ),
+              SizedBox(width: 8),
+              Icon(Icons.chevron_right),
             ],
           ),
           const SizedBox(height: 16),
-
-          // “Close” (Kanga) button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              backgroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
             ),
-            onPressed: _home,
+            onPressed: () {},
             child: const Text(
-              "Kanga",
+              'Kanga',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );
