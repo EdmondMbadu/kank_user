@@ -1,138 +1,121 @@
+// payment_history_page.dart
+
 import 'package:flutter/material.dart';
 
+typedef PaymentEntry = MapEntry<DateTime, double>;
+
 class PaymentHistoryPage extends StatelessWidget {
-  const PaymentHistoryPage({Key? key}) : super(key: key);
+  final Map<String, dynamic> clientData;
+  const PaymentHistoryPage({Key? key, required this.clientData})
+    : super(key: key);
+
+  /// Parse the timestamp key "M-D-YYYY-HH-MM-SS" into a DateTime
+  DateTime _parseKey(String key) {
+    final parts = key.split('-').map((p) => int.tryParse(p) ?? 0).toList();
+    if (parts.length >= 6) {
+      return DateTime(
+        parts[2],
+        parts[0],
+        parts[1],
+        parts[3],
+        parts[4],
+        parts[5],
+      );
+    }
+    return DateTime.now();
+  }
+
+  /// Format DateTime in french: e.g. "Vendredi 18 Avril 2025 a 16:15"
+  String _formatFrench(DateTime dt) {
+    const days = [
+      '', // dummy index 0
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+      'Dimanche',
+    ];
+    const months = [
+      '',
+      'Janvier',
+      'Février',
+      'Mars',
+      'Avril',
+      'Mai',
+      'Juin',
+      'Juillet',
+      'Août',
+      'Septembre',
+      'Octobre',
+      'Novembre',
+      'Décembre',
+    ];
+    final dayName = days[dt.weekday];
+    final monthName = months[dt.month];
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final mm = dt.minute.toString().padLeft(2, '0');
+    return '$dayName ${dt.day} $monthName ${dt.year} a $hh:$mm';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final customers = [
-      {"name": "Neil Sims", "email": "email@windster.com", "amount": "\$320"},
-      {
-        "name": "Bonnie Green",
-        "email": "email@windster.com",
-        "amount": "\$3467",
-      },
-      {
-        "name": "Michael Gough",
-        "email": "email@windster.com",
-        "amount": "\$67",
-      },
-      {"name": "Lana Byrd", "email": "email@windster.com", "amount": "\$367"},
-      {
-        "name": "Thomes Lean",
-        "email": "email@windster.com",
-        "amount": "\$2367",
-      },
-    ];
+    // Extract payments map
+    final paymentsMap = clientData['payments'] as Map<String, dynamic>? ?? {};
+
+    // Convert to list of (DateTime, amount)
+    final List<PaymentEntry> entries =
+        paymentsMap.entries
+            .map(
+              (e) => MapEntry(
+                _parseKey(e.key),
+                double.tryParse(e.value.toString()) ?? 0.0,
+              ),
+            )
+            .toList();
+
+    // Sort descending by date
+    entries.sort((a, b) => b.key.compareTo(a.key));
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Histoire ya Paiement',
+          'Details de Paiements',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Latest Customers',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('View all'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: customers.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (ctx, i) {
-                      final c = customers[i];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          child: Text(
-                            c["name"]![0],
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        title: Text(
-                          c["name"]!,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          c["email"]!,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        trailing: Text(
-                          c["amount"]!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                ],
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: entries.length,
+        separatorBuilder: (_, __) => const Divider(),
+        itemBuilder: (context, index) {
+          final entry = entries[index];
+          final dateStr = _formatFrench(entry.key);
+          final amountStr = '${entry.value.toStringAsFixed(0)} FC';
+          return ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 0,
+            ),
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Text(
+                dateStr[0],
+                style: const TextStyle(color: Colors.white),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.chevron_left),
-              SizedBox(width: 8),
-              Text(
-                '1  |  2  |  3  ...',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              SizedBox(width: 8),
-              Icon(Icons.chevron_right),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Theme.of(context).colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
+            title: Text(
+              dateStr,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            onPressed: () {},
-            child: const Text(
-              'Kanga',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            trailing: Text(
+              amountStr,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

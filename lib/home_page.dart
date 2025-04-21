@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
 
   late final List<Widget> _tabs = [
     PortalPage(clientData: widget.clientData),
-    const PaymentHistoryPage(),
+    PaymentHistoryPage(clientData: widget.clientData),
     const HelpPage(),
     ProfilePage(clientData: widget.clientData),
   ];
