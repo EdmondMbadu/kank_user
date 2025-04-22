@@ -54,14 +54,19 @@ class PortalPage extends StatelessWidget {
     final debtLeft = _asDouble(clientData['debtLeft'], 0.0);
     final savingsVal = _asDouble(clientData['savings'], 0.0);
 
+    final amountPaid = _asDouble(clientData['amountPaid'], 0.0);
     final amountToPay = _asDouble(clientData['amountToPay'], 0.0);
     final paymentPeriod = _asDouble(clientData['paymentPeriodRange'], 1.0);
     final minPaymentVal =
-        paymentPeriod == 0 ? 0.0 : amountToPay / paymentPeriod;
+        paymentPeriod == 0
+            ? debtLeft
+            : (amountToPay / paymentPeriod) > debtLeft
+            ? debtLeft
+            : amountToPay / paymentPeriod;
 
     // Formatted display strings
     final loanAmountText = '${_formatNumber(loanAmount)} FC';
-    final amountToPayText = '${_formatNumber(amountToPay)} FC';
+    final amountToPayText = '${_formatNumber(amountPaid)} FC';
     final debtLeftText = '${_formatNumber(debtLeft)} FC';
     final savingsText = '${_formatNumber(savingsVal)} FC';
     final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
@@ -158,7 +163,7 @@ class PortalPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        'Niongo Nionso',
+                        'Niongo Ofuti',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
