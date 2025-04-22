@@ -126,6 +126,8 @@ class PortalPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // ensure horizontal centering
             children: [
               // Greeting
               RichText(
@@ -194,6 +196,7 @@ class PortalPage extends StatelessWidget {
                     horizontal: 16,
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Date range
                       Text(
@@ -260,6 +263,7 @@ class PortalPage extends StatelessWidget {
                     horizontal: 16,
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
                         'Épargnes',
@@ -298,12 +302,14 @@ class PortalPage extends StatelessWidget {
                     horizontal: 16,
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Conditional title
+                      // Conditional title, now always centered
                       Text(
                         isOverdue
                             ? 'Niongo ya kofuta ⚠️  en retard'
                             : 'Niongo ya kofuta par semaines',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
