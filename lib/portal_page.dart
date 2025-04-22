@@ -6,24 +6,50 @@ class PortalPage extends StatelessWidget {
   final Map<String, dynamic> clientData;
   const PortalPage({Key? key, required this.clientData}) : super(key: key);
 
-  // Helper: parse an int from dynamic (handles int or string)
-  int _asInt(dynamic value, [int defaultValue = 0]) {
-    if (value == null) return defaultValue;
-    if (value is int) return value;
-    if (value is String) return int.tryParse(value) ?? defaultValue;
-    return defaultValue;
+  // Helpers to parse/format
+  DateTime _parseDate(String input) {
+    // expected "MM-DD-YYYY"
+    final parts = input.split('-');
+    final month = int.tryParse(parts[0]) ?? 1;
+    final day = int.tryParse(parts[1]) ?? 1;
+    final year = int.tryParse(parts[2]) ?? DateTime.now().year;
+    return DateTime(year, month, day);
   }
 
-  // Helper: parse a double from dynamic (handles int, double, or string)
-  double _asDouble(dynamic value, [double defaultValue = 0.0]) {
-    if (value == null) return defaultValue;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? defaultValue;
-    return defaultValue;
+  String _formatDate(DateTime date) {
+    const monthNames = [
+      'Janvier',
+      'Février',
+      'Mars',
+      'Avril',
+      'Mai',
+      'Juin',
+      'Juillet',
+      'Août',
+      'Septembre',
+      'Octobre',
+      'Novembre',
+      'Décembre',
+    ];
+    return '${monthNames[date.month - 1]} ${date.day}';
   }
 
-  // Helper: map credit score to a color
+  // Safely convert dynamic to int/double
+  int _asInt(dynamic v, [int d = 0]) =>
+      v == null
+          ? d
+          : v is int
+          ? v
+          : int.tryParse(v.toString()) ?? d;
+  double _asDouble(dynamic v, [double d = 0]) =>
+      v == null
+          ? d
+          : v is double
+          ? v
+          : v is int
+          ? v.toDouble()
+          : double.tryParse(v.toString()) ?? d;
+
   Color _getScoreColor(int value) {
     if (value < 50) return const Color.fromRGBO(255, 0, 0, 1);
     if (value < 60) return const Color.fromRGBO(255, 87, 34, 1);
@@ -33,18 +59,17 @@ class PortalPage extends StatelessWidget {
     return const Color.fromRGBO(40, 167, 69, 1);
   }
 
-  // Quick number formatter with thousands separators
   String _formatNumber(double value) {
     final str = value.toStringAsFixed(0);
     return str.replaceAllMapped(
       RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
+      (m) => '${m[1]},',
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Extract fields
+    // Extract raw fields
     final firstName = clientData['firstName'] as String? ?? '';
     final middleName = clientData['middleName'] as String? ?? '';
     final lastName = clientData['lastName'] as String? ?? '';
@@ -57,19 +82,30 @@ class PortalPage extends StatelessWidget {
     final amountPaid = _asDouble(clientData['amountPaid'], 0.0);
     final amountToPay = _asDouble(clientData['amountToPay'], 0.0);
     final paymentPeriod = _asDouble(clientData['paymentPeriodRange'], 1.0);
+
+    // Compute date range
+    final rawStart = clientData['debtCycleStartDate'] as String? ?? '';
+    final startDate = _parseDate(rawStart);
+    final endDate = startDate.add(Duration(days: (paymentPeriod * 7).toInt()));
+    final debtStart = _formatDate(startDate);
+    final debtEnd = _formatDate(endDate);
+
+    // Determine if overdue
+    final now = DateTime.now();
+    final isOverdue = now.isAfter(endDate);
+
+    // Format strings
+    final loanAmountText = '${_formatNumber(loanAmount)} FC';
+    final amountToPayText = '${_formatNumber(amountPaid)} FC';
+    final debtLeftText = '${_formatNumber(debtLeft)} FC';
+    final savingsText = '${_formatNumber(savingsVal)} FC';
     final minPaymentVal =
         paymentPeriod == 0
             ? debtLeft
             : (amountToPay / paymentPeriod) > debtLeft
             ? debtLeft
             : amountToPay / paymentPeriod;
-
-    // Formatted display strings
-    final loanAmountText = '${_formatNumber(loanAmount)} FC';
-    final amountToPayText = '${_formatNumber(amountPaid)} FC';
-    final debtLeftText = '${_formatNumber(debtLeft)} FC';
-    final savingsText = '${_formatNumber(savingsVal)} FC';
-    final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
+    final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
 
     return Scaffold(
       appBar: AppBar(
@@ -94,11 +130,9 @@ class PortalPage extends StatelessWidget {
               // Greeting
               RichText(
                 text: TextSpan(
-                  style: DefaultTextStyle.of(context).style.copyWith(
-                    fontSize: 20,
-                    color: Colors.black,
-                    decoration: TextDecoration.none,
-                  ),
+                  style: DefaultTextStyle.of(
+                    context,
+                  ).style.copyWith(fontSize: 20, color: Colors.black),
                   children: [
                     const TextSpan(text: 'Mbote, '),
                     TextSpan(
@@ -106,7 +140,6 @@ class PortalPage extends StatelessWidget {
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none,
                       ),
                     ),
                   ],
@@ -147,7 +180,7 @@ class PortalPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Loan & Debt Card
+              // Loan & Debt Card (static labels)
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -162,6 +195,16 @@ class PortalPage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
+                      // Date range
+                      Text(
+                        '$debtStart – $debtEnd',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       const Text(
                         'Niongo Ofuti',
                         style: TextStyle(
@@ -241,7 +284,7 @@ class PortalPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Next Payment Card
+              // Next Payment Card with overdue logic
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -256,15 +299,19 @@ class PortalPage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Text(
-                        'Montant ya kofuta ...',
+                      // Conditional title
+                      Text(
+                        isOverdue
+                            ? 'Niongo ya kofuta ⚠️  en retard'
+                            : 'Niongo ya kofuta par semaines',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white70,
+                          color: isOverdue ? Colors.red : Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 8),
+                      // Amount due
                       Text(
                         minPaymentText,
                         style: const TextStyle(
