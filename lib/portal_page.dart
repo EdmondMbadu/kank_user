@@ -15,6 +15,7 @@ class PortalPage extends StatelessWidget {
     return DateTime(year, month, day);
   }
 
+  /// Month Day Year (e.g. "Avril 4 2025")
   String _formatDate(DateTime date) {
     const monthNames = [
       'Janvier',
@@ -30,7 +31,7 @@ class PortalPage extends StatelessWidget {
       'Novembre',
       'Décembre',
     ];
-    return '${monthNames[date.month - 1]} ${date.day}';
+    return '${monthNames[date.month - 1]} ${date.day} ${date.year}';
   }
 
   int _asInt(dynamic v, [int d = 0]) =>
@@ -100,8 +101,8 @@ class PortalPage extends StatelessWidget {
     final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
 
     /*── Colours ──*/
-    final cardColor = const Color.fromARGB(255, 31, 104, 32);
-    final cardColorDate = const Color.fromARGB(255, 160, 232, 175);
+    final cardColor = const Color.fromARGB(255, 40, 123, 39);
+    final cardColorDate = const Color.fromARGB(255, 175, 236, 190);
 
     /*── Scaffold ──*/
     return Scaffold(
@@ -135,7 +136,7 @@ class PortalPage extends StatelessWidget {
                   color: cardColorDate,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: const [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
+                    BoxShadow(color: Colors.white, blurRadius: 4),
                   ],
                 ),
                 child: Text(
@@ -282,11 +283,11 @@ class _MoneyCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center, // centres children
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             title,
-            textAlign: TextAlign.center, // centres multiline title
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -296,7 +297,7 @@ class _MoneyCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             amount,
-            textAlign: TextAlign.center, // centres amount
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
