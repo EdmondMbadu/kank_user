@@ -1,23 +1,26 @@
 // portal_page.dart
 import 'package:flutter/material.dart';
 
+/*───────────────────────────────────────────────────────────*/
+/*– Brand palette (shared) –*/
+const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
+const Color kAccentRed = Color(0xFFD7263D); // vivid red
+const Color kLightBlue = Color(0xFFE7F0FF); // soft background tint
+const Color kCardBlue = Color(0xFF123D7B); // card background
+/*───────────────────────────────────────────────────────────*/
+
 class PortalPage extends StatelessWidget {
   final Map<String, dynamic> clientData;
   const PortalPage({Key? key, required this.clientData}) : super(key: key);
 
   /*──────────── Helpers ────────────*/
-  DateTime _parseDate(String input) {
-    // expected format: "MM-DD-YYYY"
-    final parts = input.split('-');
-    final month = int.tryParse(parts[0]) ?? 1;
-    final day = int.tryParse(parts[1]) ?? 1;
-    final year = int.tryParse(parts[2]) ?? DateTime.now().year;
-    return DateTime(year, month, day);
+  DateTime _parseDate(String v) {
+    final p = v.split('-').map((e) => int.tryParse(e) ?? 1).toList();
+    return p.length >= 3 ? DateTime(p[2], p[0], p[1]) : DateTime.now();
   }
 
-  /// Month Day Year (e.g. "Avril 4 2025")
-  String _formatDate(DateTime date) {
-    const monthNames = [
+  String _fmtDate(DateTime d) {
+    const m = [
       'Janvier',
       'Février',
       'Mars',
@@ -31,32 +34,28 @@ class PortalPage extends StatelessWidget {
       'Novembre',
       'Décembre',
     ];
-    return '${monthNames[date.month - 1]} ${date.day} ${date.year}';
+    return '${m[d.month - 1]} ${d.day} ${d.year}';
   }
 
   int _asInt(dynamic v, [int d = 0]) =>
       v == null ? d : (v is int ? v : int.tryParse(v.toString()) ?? d);
-  double _asDouble(dynamic v, [double d = 0]) =>
+  double _asDbl(dynamic v, [double d = 0]) =>
       v == null
           ? d
-          : v is double
-          ? v
-          : v is int
-          ? v.toDouble()
-          : double.tryParse(v.toString()) ?? d;
+          : (v is double
+              ? v
+              : (v is int ? v.toDouble() : double.tryParse(v.toString()) ?? d));
 
-  Color _getScoreColor(int v) {
-    if (v < 50) return const Color.fromRGBO(255, 0, 0, 1);
-    if (v < 60) return const Color.fromRGBO(255, 87, 34, 1);
-    if (v < 70) return const Color.fromRGBO(255, 152, 0, 1);
-    if (v < 80) return const Color.fromRGBO(255, 193, 7, 1);
-    if (v < 90) return const Color.fromRGBO(139, 195, 74, 1);
-    return const Color.fromRGBO(40, 167, 69, 1);
+  Color _scoreColor(int s) {
+    if (s < 50) return kAccentRed;
+    if (s < 70) return Colors.orange;
+    if (s < 90) return Colors.amber;
+    return const Color(0xFF2ECC71); // green
   }
 
-  String _formatNumber(double v) {
-    final str = v.toStringAsFixed(0);
-    return str.replaceAllMapped(
+  String _fmtNum(num v) {
+    final s = v.toStringAsFixed(0);
+    return s.replaceAllMapped(
       RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
       (m) => '${m[1]},',
     );
@@ -65,151 +64,138 @@ class PortalPage extends StatelessWidget {
   /*──────────── UI ────────────*/
   @override
   Widget build(BuildContext context) {
-    /*── Extract data ──*/
-    final firstName = clientData['firstName'] as String? ?? '';
-    final middleName = clientData['middleName'] as String? ?? '';
-    final lastName = clientData['lastName'] as String? ?? '';
-    final creditScore = _asInt(clientData['creditScore'], 50);
+    /*─ Data ─*/
+    final f = clientData['firstName'] ?? '';
+    final m = clientData['middleName'] ?? '';
+    final l = clientData['lastName'] ?? '';
+    final sco = _asInt(clientData['creditScore'], 50);
 
-    final debtLeft = _asDouble(clientData['debtLeft'], 0);
-    final savingsVal = _asDouble(clientData['savings'], 0);
+    final debt = _asDbl(clientData['debtLeft']);
+    final savings = _asDbl(clientData['savings']);
+    final paid = _asDbl(clientData['amountPaid']);
+    final toPay = _asDbl(clientData['amountToPay']);
+    final periodW = _asDbl(clientData['paymentPeriodRange'], 1);
 
-    final amountPaid = _asDouble(clientData['amountPaid'], 0);
-    final amountToPay = _asDouble(clientData['amountToPay'], 0);
-    final paymentPeriod = _asDouble(clientData['paymentPeriodRange'], 1);
+    final start = _parseDate(clientData['debtCycleStartDate'] ?? '');
+    final end = start.add(Duration(days: (periodW * 7).toInt()));
+    final overdue = DateTime.now().isAfter(end);
 
-    // dates
-    final startDateStr = clientData['debtCycleStartDate'] as String? ?? '';
-    final startDate = _parseDate(startDateStr);
-    final endDate = startDate.add(Duration(days: (paymentPeriod * 7).toInt()));
-    final debtStart = _formatDate(startDate);
-    final debtEnd = _formatDate(endDate);
+    final minWeek =
+        periodW == 0
+            ? debt
+            : (toPay / periodW) > debt
+            ? debt
+            : (toPay / periodW);
 
-    final isOverdue = DateTime.now().isAfter(endDate);
-
-    /*── Formatted strings ──*/
-    final amountToPayText = '${_formatNumber(amountPaid)} FC';
-    final debtLeftText = '${_formatNumber(debtLeft)} FC';
-    final savingsText = '${_formatNumber(savingsVal)} FC';
-
-    final minPaymentVal =
-        paymentPeriod == 0
-            ? debtLeft
-            : (amountToPay / paymentPeriod) > debtLeft
-            ? debtLeft
-            : amountToPay / paymentPeriod;
-    final minPaymentText = '${_formatNumber(minPaymentVal)} FC';
-
-    /*── Colours ──*/
-    final cardColor = const Color.fromARGB(255, 40, 123, 39);
-    final cardColorDate = const Color.fromARGB(255, 175, 236, 190);
-
-    /*── Scaffold ──*/
+    /*─ Build ─*/
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kPrimaryBlue,
         title: const Text(
           'Fondation Gervais',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => Navigator.pushReplacementNamed(context, '/'),
           ),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              /*── Date banner ──*/
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                  horizontal: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: cardColorDate,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.white, blurRadius: 4),
-                  ],
-                ),
-                child: Text(
-                  '$debtStart — $debtEnd',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+
+      /*── Gradient background ─*/
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, kLightBlue],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              children: [
+                /*── Cycle chip ─*/
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    color: kLightBlue,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: kPrimaryBlue.withOpacity(.2)),
+                  ),
+                  child: Text(
+                    '${_fmtDate(start)} — ${_fmtDate(end)}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-              /*── Greeting ──*/
-              RichText(
-                text: TextSpan(
-                  style: DefaultTextStyle.of(
-                    context,
-                  ).style.copyWith(fontSize: 20),
-                  children: [
-                    const TextSpan(text: 'Mbote, '),
-                    TextSpan(
-                      text: '$firstName $middleName $lastName',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                /*── Greeting ─*/
+                RichText(
+                  text: TextSpan(
+                    style: DefaultTextStyle.of(
+                      context,
+                    ).style.copyWith(fontSize: 20),
+                    children: [
+                      const TextSpan(text: 'Mbote, '),
+                      TextSpan(
+                        text: '$f $m $l',
+                        style: const TextStyle(
+                          color: kPrimaryBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 26),
+
+                /*── Score ─*/
+                _ScoreBadge(score: sco, color: _scoreColor(sco)),
+                const SizedBox(height: 30),
+
+                /*── Money cards grid ─*/
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    _MoneyCard(
+                      title: 'Niongo Ofuti',
+                      amount: '${_fmtNum(paid)} FC',
+                      color: kCardBlue,
+                    ),
+                    _MoneyCard(
+                      title: 'Niongo Etikali',
+                      amount: '${_fmtNum(debt)} FC',
+                      color: kCardBlue,
+                    ),
+                    _MoneyCard(
+                      title: 'Épargnes',
+                      amount: '${_fmtNum(savings)} FC',
+                      color: kCardBlue,
+                    ),
+                    _MoneyCard(
+                      title: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
+                      amount:
+                          overdue
+                              ? '${_fmtNum(debt)} FC'
+                              : '${_fmtNum(minWeek)} FC',
+                      color: overdue ? kAccentRed : kCardBlue,
+                      titleColor: Colors.white,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              /*── Credit badge ──*/
-              _ScoreBadge(
-                score: creditScore,
-                color: _getScoreColor(creditScore),
-              ),
-              const SizedBox(height: 20),
-
-              /*── Money cards ──*/
-              _MoneyCard(
-                title: 'Niongo Ofuti',
-                amount: amountToPayText,
-                color: cardColor,
-              ),
-              const SizedBox(height: 16),
-              _MoneyCard(
-                title: 'Niongo Etikali',
-                amount: debtLeftText,
-                color: cardColor,
-              ),
-              const SizedBox(height: 16),
-              _MoneyCard(
-                title: 'Épargnes',
-                amount: savingsText,
-                color: cardColor,
-              ),
-              const SizedBox(height: 16),
-
-              /*── Upcoming / overdue payment ──*/
-              _MoneyCard(
-                title:
-                    isOverdue
-                        ? 'Niongo ya kofuta ⚠️ en retard'
-                        : 'Niongo ya kofuta par semaines',
-                amount: isOverdue ? debtLeftText : minPaymentText,
-                color:
-                    isOverdue
-                        ? const Color.fromARGB(255, 167, 39, 39)
-                        : cardColor,
-                titleColor: isOverdue ? Colors.white : null,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -217,8 +203,7 @@ class PortalPage extends StatelessWidget {
   }
 }
 
-/*──────────── Re‑usable widgets ────────────*/
-
+/*────────── Re-usable widgets ──────────*/
 class _ScoreBadge extends StatelessWidget {
   final int score;
   final Color color;
@@ -228,14 +213,14 @@ class _ScoreBadge extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     children: [
       Container(
-        width: 80,
-        height: 80,
+        width: 90,
+        height: 90,
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withOpacity(.15),
               blurRadius: 8,
               offset: const Offset(2, 2),
             ),
@@ -245,7 +230,7 @@ class _ScoreBadge extends StatelessWidget {
           child: Text(
             '$score',
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -275,22 +260,21 @@ class _MoneyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-    elevation: 4,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    elevation: 6,
     color: color,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     child: Container(
-      width: 300,
+      width: 160,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
               color: titleColor ?? Colors.white70,
             ),
           ),
@@ -299,7 +283,7 @@ class _MoneyCard extends StatelessWidget {
             amount,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 32,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
