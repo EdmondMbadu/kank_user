@@ -328,7 +328,7 @@ class _DebtCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _InfoRow(
-              label: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
+              label: overdue ? '⚠️ Retard à payer' : 'Minimum par semaine',
               value: '${_fmtNumStatic(overdue ? debtLeft : minWeekly)} FC',
               valueColor: overdue ? kAccentRed : kPrimaryBlue,
             ),
