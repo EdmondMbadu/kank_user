@@ -1,4 +1,4 @@
-// portal_page.dart
+// portal_page_modern.dart – refreshed UI inspired by the Bank of America mobile look
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
 const Color kAccentRed = Color(0xFFD7263D); // vivid red
 const Color kLightBlue = Color(0xFFE7F0FF); // soft background tint
-const Color kCardBlue = Color(0xFF123D7B); // card background
-/*───────────────────────────────────────────────────────────*/
+const Color kCardBorder = Color(0xFF123D7B); // subtle card border for neutrals
 
+/*───────────────────────────────────────────────────────────*/
 class PortalPage extends StatelessWidget {
   final Map<String, dynamic> clientData;
   const PortalPage({Key? key, required this.clientData}) : super(key: key);
@@ -42,9 +42,7 @@ class PortalPage extends StatelessWidget {
   double _asDbl(dynamic v, [double d = 0]) =>
       v == null
           ? d
-          : (v is double
-              ? v
-              : (v is int ? v.toDouble() : double.tryParse(v.toString()) ?? d));
+          : (v is num ? v.toDouble() : double.tryParse(v.toString()) ?? d);
 
   Color _scoreColor(int s) {
     if (s < 50) return kAccentRed;
@@ -89,16 +87,26 @@ class PortalPage extends StatelessWidget {
 
     /*─ Build ─*/
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: kPrimaryBlue,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: kPrimaryBlue),
+          onPressed: () {},
+        ),
         title: const Text(
           'Fondation Gervais',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
+            icon: const Icon(Icons.mail_outline, color: kPrimaryBlue),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: kPrimaryBlue),
             onPressed: () => Navigator.pushReplacementNamed(context, '/'),
           ),
         ],
@@ -115,25 +123,29 @@ class PortalPage extends StatelessWidget {
         ),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /*── Cycle chip ─*/
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    color: kLightBlue,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: kPrimaryBlue.withOpacity(.2)),
-                  ),
-                  child: Text(
-                    '${_fmtDate(start)} — ${_fmtDate(end)}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                /*── Cycle pill ─*/
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 20,
+                    ),
+                    decoration: BoxDecoration(
+                      color: kLightBlue,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: kPrimaryBlue.withOpacity(.15)),
+                    ),
+                    child: Text(
+                      '${_fmtDate(start)} — ${_fmtDate(end)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -141,10 +153,12 @@ class PortalPage extends StatelessWidget {
 
                 /*── Greeting ─*/
                 RichText(
+                  textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: DefaultTextStyle.of(
-                      context,
-                    ).style.copyWith(fontSize: 20),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 20,
+                      color: Colors.black87,
+                    ),
                     children: [
                       const TextSpan(text: 'Mbote, '),
                       TextSpan(
@@ -160,28 +174,36 @@ class PortalPage extends StatelessWidget {
                 const SizedBox(height: 26),
 
                 /*── Score ─*/
-                _ScoreBadge(score: sco, color: _scoreColor(sco)),
-                const SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.center,
+                  child: _ScoreBadge(score: sco, color: _scoreColor(sco)),
+                ),
+                const SizedBox(height: 32),
+
+                /*── Accounts Section Title ─*/
+                _SectionHeader(title: 'Comptes'),
+                const SizedBox(height: 12),
 
                 /*── Money cards grid ─*/
                 Wrap(
                   spacing: 16,
                   runSpacing: 16,
+                  alignment: WrapAlignment.center,
                   children: [
                     _MoneyCard(
                       title: 'Niongo Ofuti',
                       amount: '${_fmtNum(paid)} FC',
-                      color: kCardBlue,
+                      accentColor: kPrimaryBlue,
                     ),
                     _MoneyCard(
                       title: 'Niongo Etikali',
                       amount: '${_fmtNum(debt)} FC',
-                      color: kCardBlue,
+                      accentColor: kPrimaryBlue,
                     ),
                     _MoneyCard(
                       title: 'Épargnes',
                       amount: '${_fmtNum(savings)} FC',
-                      color: kCardBlue,
+                      accentColor: kPrimaryBlue,
                     ),
                     _MoneyCard(
                       title: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
@@ -189,8 +211,8 @@ class PortalPage extends StatelessWidget {
                           overdue
                               ? '${_fmtNum(debt)} FC'
                               : '${_fmtNum(minWeek)} FC',
-                      color: overdue ? kAccentRed : kCardBlue,
-                      titleColor: Colors.white,
+                      accentColor: overdue ? kAccentRed : kPrimaryBlue,
+                      titleColor: overdue ? kAccentRed : kPrimaryBlue,
                     ),
                   ],
                 ),
@@ -204,6 +226,30 @@ class PortalPage extends StatelessWidget {
 }
 
 /*────────── Re-usable widgets ──────────*/
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Container(
+        width: 5,
+        height: 20,
+        decoration: BoxDecoration(
+          color: kPrimaryBlue,
+          borderRadius: BorderRadius.circular(3),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+      ),
+    ],
+  );
+}
+
 class _ScoreBadge extends StatelessWidget {
   final int score;
   final Color color;
@@ -213,14 +259,18 @@ class _ScoreBadge extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     children: [
       Container(
-        width: 90,
-        height: 90,
+        width: 96,
+        height: 96,
         decoration: BoxDecoration(
-          color: color,
+          gradient: LinearGradient(
+            colors: [color.withOpacity(.9), color.withOpacity(.6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.15),
+              color: Colors.black.withOpacity(.12),
               blurRadius: 8,
               offset: const Offset(2, 2),
             ),
@@ -249,47 +299,72 @@ class _ScoreBadge extends StatelessWidget {
 class _MoneyCard extends StatelessWidget {
   final String title;
   final String amount;
-  final Color color;
+  final Color accentColor;
   final Color? titleColor;
   const _MoneyCard({
     required this.title,
     required this.amount,
-    required this.color,
+    required this.accentColor,
     this.titleColor,
   });
 
   @override
-  Widget build(BuildContext context) => Card(
-    elevation: 6,
-    color: color,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-    child: Container(
-      width: 160,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: titleColor ?? Colors.white70,
+  Widget build(BuildContext context) => Container(
+    width: 170,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: kCardBorder.withOpacity(.1)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(.06),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // accent line
+        Container(
+          height: 5,
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(18),
+              topRight: Radius.circular(18),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            amount,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            children: [
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: titleColor ?? Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                amount,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryBlue,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }
