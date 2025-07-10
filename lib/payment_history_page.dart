@@ -1,14 +1,13 @@
-// payment_history_page.dart
+// payment_history_page_modern.dart – refreshed UI with white/blue/red theme
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
-/*– Brand palette (shared with the whole app) –*/
+/*– Shared palette –*/
 const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
-const Color kAccentRed = Color(0xFFD7263D); // vivid accent red
-const Color kLightBlue = Color(0xFFE7F0FF); // gentle bg tint
-const Color kCardBlue = Color(0xFF123D7B); // card background
-/*───────────────────────────────────────────────────────────*/
+const Color kAccentRed = Color(0xFFD7263D); // vivid red
+const Color kLightBlue = Color(0xFFF5F9FF); // very soft background tint
 
+/*───────────────────────────────────────────────────────────*/
 typedef PaymentEntry = MapEntry<DateTime, double>;
 
 class PaymentHistoryPage extends StatelessWidget {
@@ -25,7 +24,7 @@ class PaymentHistoryPage extends StatelessWidget {
         : DateTime.now();
   }
 
-  /// "Vendredi 18 Avril 2025 à 16 :15"
+  /// Format: "Vendredi 18 Avril 2025 à 16:15"
   String _formatFr(DateTime d) {
     const days = [
       '',
@@ -59,7 +58,7 @@ class PaymentHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*── Build & sort list ──*/
+    // build & sort entries
     final rawMap = clientData['payments'] as Map<String, dynamic>? ?? {};
     final List<PaymentEntry> entries =
         rawMap.entries
@@ -73,16 +72,21 @@ class PaymentHistoryPage extends StatelessWidget {
           ..sort((a, b) => b.key.compareTo(a.key));
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: kPrimaryBlue,
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: const Text(
-          'Détails de Paiements',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          'Historique des paiements',
+          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
+        iconTheme: const IconThemeData(color: kPrimaryBlue),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Container(height: 3, color: kAccentRed),
+        ),
       ),
-
-      /*── Background gradient ──*/
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -91,55 +95,83 @@ class PaymentHistoryPage extends StatelessWidget {
             colors: [Colors.white, kLightBlue],
           ),
         ),
-
-        /*── List of payments ──*/
-        child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: entries.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, i) {
-            final e = entries[i];
-            final date = _formatFr(e.key);
-            final amount = '${e.value.toStringAsFixed(0)} FC';
-
-            return Card(
-              color: kCardBlue,
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 18,
-                ),
-                leading: CircleAvatar(
-                  backgroundColor: kAccentRed,
+        child:
+            entries.isEmpty
+                ? const Center(
                   child: Text(
-                    date[0],
-                    style: const TextStyle(color: Colors.white),
+                    'Aucun paiement enregistré',
+                    style: TextStyle(fontSize: 16),
                   ),
+                )
+                : ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: entries.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, i) {
+                    final e = entries[i];
+                    final dateStr = _formatFr(e.key);
+                    final amountStr = '${e.value.toStringAsFixed(0)} FC';
+
+                    return Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: InkWell(
+                        onTap: () {},
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: kPrimaryBlue.withOpacity(.08),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              // red accent bar
+                              Container(
+                                width: 6,
+                                height: 80,
+                                decoration: const BoxDecoration(
+                                  color: kAccentRed,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    bottomLeft: Radius.circular(16),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  title: Text(
+                                    dateStr,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: kPrimaryBlue,
+                                    ),
+                                  ),
+                                  trailing: Text(
+                                    amountStr,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryBlue,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                title: Text(
-                  date,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                trailing: Text(
-                  amount,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
       ),
     );
   }

@@ -1,12 +1,13 @@
-// portal_page_modern.dart – v2 with two large cards (Debt & Savings)
+// portal_page_modern.dart – v4  ✨
+// Professional refresh with subtle red accents, cleaner typography
+// and refined card treatments. Primary palette: white, blue & red.
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
 /*– Brand palette –*/
 const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
 const Color kAccentRed = Color(0xFFD7263D); // vivid red
-const Color kLightBlue = Color(0xFFE7F0FF); // soft background tint
-const Color kBorderColor = Color(0xFF123D7B); // subtle card border
+const Color kLightBlue = Color(0xFFF5F9FF); // very soft background tint
 
 /*───────────────────────────────────────────────────────────*/
 class PortalPage extends StatelessWidget {
@@ -48,8 +49,8 @@ class PortalPage extends StatelessWidget {
     if (s < 50) return kAccentRed;
     if (s < 70) return Colors.orange;
     if (s < 90) return Colors.amber;
-    return const Color(0xFF2ECC71);
-  } // green
+    return const Color(0xFF2ECC71); // green
+  }
 
   String _fmtNum(num v) {
     final s = v.toStringAsFixed(0);
@@ -62,7 +63,7 @@ class PortalPage extends StatelessWidget {
   /*──────────── UI ────────────*/
   @override
   Widget build(BuildContext context) {
-    /*─ Data ─*/
+    // data extraction
     final f = clientData['firstName'] ?? '';
     final m = clientData['middleName'] ?? '';
     final l = clientData['lastName'] ?? '';
@@ -87,13 +88,14 @@ class PortalPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        titleSpacing: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: kPrimaryBlue),
           onPressed: () {},
         ),
         title: const Text(
           'Fondation Gervais',
-          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.bold),
+          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
         actions: [
@@ -106,6 +108,13 @@ class PortalPage extends StatelessWidget {
             onPressed: () => Navigator.pushReplacementNamed(context, '/'),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Container(
+            height: 3,
+            color: kAccentRed,
+          ), // subtle red underline
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -121,7 +130,7 @@ class PortalPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /*── Cycle pill ─*/
+                // period pill
                 Align(
                   alignment: Alignment.center,
                   child: Container(
@@ -132,7 +141,7 @@ class PortalPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: kLightBlue,
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: kPrimaryBlue.withOpacity(.15)),
+                      border: Border.all(color: kPrimaryBlue.withOpacity(.12)),
                     ),
                     child: Text(
                       '${_fmtDate(start)} — ${_fmtDate(end)}',
@@ -144,7 +153,7 @@ class PortalPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                /*── Greeting ─*/
+                // greeting
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -164,27 +173,25 @@ class PortalPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 26),
-                /*── Score ─*/
+                const SizedBox(height: 28),
+                // score badge
                 Align(
                   alignment: Alignment.center,
                   child: _ScoreBadge(score: sco, color: _scoreColor(sco)),
                 ),
-                const SizedBox(height: 32),
-
-                /*── Accounts Section ─*/
+                const SizedBox(height: 34),
+                // section header
                 _SectionHeader(title: 'Comptes'),
-                const SizedBox(height: 12),
-
-                /*── Debt Card ─*/
+                const SizedBox(height: 16),
+                // debt card
                 _DebtCard(
                   debtLeft: debt,
                   alreadyPaid: paid,
                   minWeekly: minWeek,
                   overdue: overdue,
                 ),
-                const SizedBox(height: 20),
-                /*── Savings Card ─*/
+                const SizedBox(height: 24),
+                // savings card
                 _SavingsCard(savings: savings),
               ],
             ),
@@ -195,7 +202,7 @@ class PortalPage extends StatelessWidget {
   }
 }
 
-/*────────── Widgets ──────────*/
+/*────────── Sub-widgets ──────────*/
 class _SectionHeader extends StatelessWidget {
   final String title;
   const _SectionHeader({required this.title});
@@ -206,7 +213,7 @@ class _SectionHeader extends StatelessWidget {
         width: 5,
         height: 20,
         decoration: BoxDecoration(
-          color: kPrimaryBlue,
+          gradient: const LinearGradient(colors: [kAccentRed, kPrimaryBlue]),
           borderRadius: BorderRadius.circular(3),
         ),
       ),
@@ -230,19 +237,16 @@ class _ScoreBadge extends StatelessWidget {
         width: 96,
         height: 96,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [color.withOpacity(.9), color.withOpacity(.6)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
           shape: BoxShape.circle,
+          gradient: LinearGradient(colors: [Colors.white, kLightBlue]),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.12),
-              blurRadius: 8,
-              offset: const Offset(2, 2),
+              color: Colors.black.withOpacity(.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
+          border: Border.all(color: color, width: 4),
         ),
         child: Center(
           child: Text(
@@ -250,7 +254,7 @@ class _ScoreBadge extends StatelessWidget {
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: kPrimaryBlue,
             ),
           ),
         ),
@@ -265,9 +269,7 @@ class _ScoreBadge extends StatelessWidget {
 }
 
 class _DebtCard extends StatelessWidget {
-  final double debtLeft;
-  final double alreadyPaid;
-  final double minWeekly;
+  final double debtLeft, alreadyPaid, minWeekly;
   final bool overdue;
   const _DebtCard({
     required this.debtLeft,
@@ -275,44 +277,62 @@ class _DebtCard extends StatelessWidget {
     required this.minWeekly,
     required this.overdue,
   });
-
   @override
   Widget build(BuildContext context) => Card(
-    elevation: 4,
+    elevation: 6,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-    child: ExpansionTile(
-      tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Niongo Etikali',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: kPrimaryBlue,
-            ),
-          ),
-          Text(
-            '${_fmtNumStatic(debtLeft)} FC',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: kPrimaryBlue,
-            ),
-          ),
-        ],
-      ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Divider(height: 1),
-        const SizedBox(height: 12),
-        _InfoRow(label: 'Déjà payé', value: '${_fmtNumStatic(alreadyPaid)} FC'),
-        const SizedBox(height: 8),
-        _InfoRow(
-          label: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
-          value: '${_fmtNumStatic(overdue ? debtLeft : minWeekly)} FC',
-          valueColor: overdue ? kAccentRed : kPrimaryBlue,
+        // accent bar
+        Container(
+          height: 6,
+          decoration: BoxDecoration(
+            color: overdue ? kAccentRed : kPrimaryBlue,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(18),
+              topRight: Radius.circular(18),
+            ),
+          ),
+        ),
+        ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Niongo Etikali',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: kPrimaryBlue,
+                ),
+              ),
+              Text(
+                '${_fmtNumStatic(debtLeft)} FC',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryBlue,
+                ),
+              ),
+            ],
+          ),
+          children: [
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            _InfoRow(
+              label: 'Déjà payé',
+              value: '${_fmtNumStatic(alreadyPaid)} FC',
+            ),
+            const SizedBox(height: 8),
+            _InfoRow(
+              label: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
+              value: '${_fmtNumStatic(overdue ? debtLeft : minWeekly)} FC',
+              valueColor: overdue ? kAccentRed : kPrimaryBlue,
+            ),
+          ],
         ),
       ],
     ),
@@ -324,48 +344,62 @@ class _SavingsCard extends StatelessWidget {
   const _SavingsCard({required this.savings});
   @override
   Widget build(BuildContext context) => Card(
-    elevation: 4,
+    elevation: 6,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          height: 6,
+          decoration: const BoxDecoration(
+            color: kAccentRed,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(18),
+              topRight: Radius.circular(18),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Épargnes',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Épargnes',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: kPrimaryBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Disponible',
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Disponible',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+              Text(
+                '${_fmtNumStatic(savings)} FC',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryBlue,
+                ),
               ),
             ],
           ),
-          Text(
-            '${_fmtNumStatic(savings)} FC',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: kPrimaryBlue,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }
 
 class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
+  final String label, value;
   final Color? valueColor;
   const _InfoRow({required this.label, required this.value, this.valueColor});
   @override
@@ -385,7 +419,7 @@ class _InfoRow extends StatelessWidget {
   );
 }
 
-/*── Static formatter helper because _DebtCard is outside main class ─*/
+// helper outside main class
 String _fmtNumStatic(num v) {
   final s = v.toStringAsFixed(0);
   return s.replaceAllMapped(

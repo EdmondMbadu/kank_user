@@ -1,29 +1,36 @@
-// help_page.dart
+// help_page_modern.dart – refined white/blue/red styling
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
 /*– Brand palette –*/
 const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
-const Color kAccentRed = Color(0xFFD7263D); // vivid accent red
-const Color kLightBlue = Color(0xFFE7F0FF); // background tint
-const Color kCardBlue = Color(0xFF123D7B); // card background
-/*───────────────────────────────────────────────────────────*/
+const Color kAccentRed = Color(0xFFD7263D); // vivid red
+const Color kLightBlue = Color(0xFFF5F9FF); // soft background tint
 
+/*───────────────────────────────────────────────────────────*/
 class HelpPage extends StatelessWidget {
   const HelpPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const phoneNumber = '085 333 567'; // thin space for better readability
+    const phoneNumber = '085 333 567';
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: kPrimaryBlue,
-        title: const Text('Mituna', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Mituna',
+          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.w700),
+        ),
         centerTitle: true,
+        iconTheme: const IconThemeData(color: kPrimaryBlue),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Container(height: 3, color: kAccentRed),
+        ),
       ),
-
-      /*── Gradient background ──*/
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -34,79 +41,70 @@ class HelpPage extends StatelessWidget {
         ),
         child: Center(
           child: Card(
-            color: kCardBlue,
             elevation: 6,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
             ),
-            child: Stack(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /*── Stripe ─*/
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
+                // accent bar
+                Container(
                   height: 6,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: kAccentRed,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
+                  decoration: const BoxDecoration(
+                    color: kAccentRed,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
                 ),
-
-                /*── Card body ─*/
-                Container(
-                  width: 320,
+                Padding(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
                         Icons.support_agent,
-                        size: 60,
-                        color: Colors.white,
+                        size: 64,
+                        color: kPrimaryBlue,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       const Text(
-                        'Pour toutes questions sur vos prêts, épargnes ou autres services, appelez-nous au :',
+                        'Besoin d’aide pour vos prêts, épargnes ou autres services ? Contactez notre équipe :',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white70,
+                          color: kPrimaryBlue,
                           height: 1.4,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 22),
-
-                      /*── Phone number ─*/
+                      const SizedBox(height: 28),
                       Text(
                         phoneNumber,
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: kPrimaryBlue,
                         ),
                       ),
                       const SizedBox(height: 32),
-
-                      /*── Call button (optional) ─*/
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           icon: const Icon(Icons.phone),
                           onPressed: () {
-                            // TODO: integrate url_launcher if desired
+                            /* TODO: add url_launcher */
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: kPrimaryBlue,
-                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.white,
+                            backgroundColor: kAccentRed,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(14),
                             ),
+                            elevation: 0,
                           ),
                           label: const Text(
                             'Appeler',
