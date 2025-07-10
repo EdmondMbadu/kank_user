@@ -1,5 +1,6 @@
 // payment_history_page_modern.dart – v2.1 (Futa icon = money)
 import 'package:flutter/material.dart';
+import 'payment_page.dart'; // ➜ ajuste le chemin si nécessaire
 
 /*───────────────────────────────────────────────────────────*/
 /*– Shared palette –*/
@@ -106,14 +107,7 @@ class PaymentHistoryPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Column(
-                        children: [
-                          _FutaShortcut(
-                            onTap: () {
-                              /* TODO: go to payment flow */
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+                        children: [_FutaShortcut(), const SizedBox(height: 20)],
                       );
                     }
                     final e = entries[index - 1];
@@ -188,12 +182,16 @@ class PaymentHistoryPage extends StatelessWidget {
 
 /*────────── Shortcut tile ──────────*/
 class _FutaShortcut extends StatelessWidget {
-  final VoidCallback onTap;
-  const _FutaShortcut({required this.onTap});
+  const _FutaShortcut({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PaymentPage()),
+      );
+    },
     borderRadius: BorderRadius.circular(18),
     child: Container(
       width: double.infinity,
@@ -212,22 +210,19 @@ class _FutaShortcut extends StatelessWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.attach_money, size: 40, color: kPrimaryBlue),
-          const SizedBox(height: 8),
+        children: const [
+          Icon(Icons.attach_money, size: 40, color: kPrimaryBlue),
+          SizedBox(height: 8),
           Text(
             'Futa',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: kPrimaryBlue,
             ),
           ),
-          const SizedBox(height: 2),
-          const Text(
-            'Payer',
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
+          SizedBox(height: 2),
+          Text('Payer', style: TextStyle(fontSize: 12, color: Colors.black54)),
         ],
       ),
     ),

@@ -1,152 +1,179 @@
+// payment_page_modern.dart – blue/red polish + Futa action
 import 'package:flutter/material.dart';
 
+/*───────────────────────────────────────────────────────────*/
+/* – Palette – */
+const Color kPrimaryBlue = Color(0xFF0A2A55);
+const Color kAccentRed = Color(0xFFD7263D);
+const Color kLightBlue = Color(0xFFF5F9FF);
+
+/*───────────────────────────────────────────────────────────*/
 class PaymentPage extends StatefulWidget {
   const PaymentPage({Key? key}) : super(key: key);
-
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  // Store the current typed amount (as text)
-  String _enteredAmount = "0";
+  String _amount = "0";
 
-  /// Append a digit or decimal point to the current amount
-  void _appendValue(String value) {
+  void _append(String v) {
     setState(() {
-      // If we currently have "0" and we tap a digit, replace "0"
-      // But if we tap ".", allow "0." to appear
-      if (_enteredAmount == "0" && value != ".") {
-        _enteredAmount = value;
-      } else {
-        // Prevent multiple decimal points
-        if (value == "." && _enteredAmount.contains(".")) return;
-        _enteredAmount += value;
+      if (_amount == "0" && v != ".")
+        _amount = v;
+      else {
+        if (v == "." && _amount.contains(".")) return;
+        _amount += v;
       }
     });
   }
 
-  /// Delete the last character of the typed amount
-  void _deleteLastDigit() {
-    if (_enteredAmount.isNotEmpty) {
-      setState(() {
-        _enteredAmount = _enteredAmount.substring(0, _enteredAmount.length - 1);
-        // If we delete all digits, revert to "0"
-        if (_enteredAmount.isEmpty) {
-          _enteredAmount = "0";
-        }
-      });
+  void _del() {
+    if (_amount.isNotEmpty) {
+      setState(() => _amount = _amount.substring(0, _amount.length - 1));
+      if (_amount.isEmpty) _amount = "0";
     }
   }
 
-  /// Handle "Tínda" (submit)
-  void _submit() {
-    // For demonstration, just show a dialog with the typed amount.
-    // Replace this with your real payment submission logic.
-    final amountDouble = double.tryParse(_enteredAmount) ?? 0.0;
-    showDialog(
+  /*──────── confirmation flow ────────*/
+  void _futa() async {
+    final confirm = await showDialog<bool>(
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text("Mbongo efutami"),
-            content: Text("Ofuti $amountDouble FC"),
+            title: const Text('Confirmer le paiement'),
+            content: Text('Envoyer $_amount FC ?'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"),
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Annuler'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kAccentRed,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Confirmer'),
               ),
             ],
           ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(title: const Text("Futa Mbongo"), centerTitle: true),
-      body: Center(
-        child: Card(
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Container(
-            width: 340,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.background,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Display the entered amount in large text
-                Text(
-                  "$_enteredAmount FC",
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Numeric keypad
-                _buildNumberPad(),
-
-                const SizedBox(height: 16),
-
-                // Buttons row
-                Row(
-                  children: [
-                    // Tika (Cancel)
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          side: BorderSide(
-                            color: theme.colorScheme.primary,
-                            width: 2,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Tika", // Cancel
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Tínda (Submit)
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: _submit,
-                        child: const Text(
-                          "Tínda", // Submit
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ],
+    if (confirm == true) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('Succès'),
+              content: Text('Paiement envoyé avec succès ( $_amount FC )'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
                 ),
               ],
+            ),
+      );
+    }
+  }
+
+  /*──────── UI ────────*/
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: kPrimaryBlue),
+        title: const Text(
+          'Futa Mbongo',
+          style: TextStyle(color: kPrimaryBlue, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Container(height: 3, color: kAccentRed),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, kLightBlue],
+          ),
+        ),
+        child: Center(
+          child: Card(
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Container(
+              width: 340,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$_amount FC',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildPad(),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            side: const BorderSide(color: kAccentRed, width: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Tika',
+                            style: TextStyle(
+                              color: kAccentRed,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kAccentRed,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          onPressed: _futa,
+                          child: const Text(
+                            'Futa',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -154,62 +181,41 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  /// Build a 3x4 keypad (digits, decimal point, and delete)
-  Widget _buildNumberPad() {
-    final buttons = [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      ".",
-      "0",
-      "X",
-    ];
-
+  Widget _buildPad() {
+    final keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'X'];
     return SizedBox(
       width: 300,
-      // Use Wrap, GridView, or Table for layout
       child: Table(
         border: TableBorder.all(color: Colors.grey.shade300, width: 1),
         children: [
-          TableRow(children: buttons.sublist(0, 3).map(_buildKey).toList()),
-          TableRow(children: buttons.sublist(3, 6).map(_buildKey).toList()),
-          TableRow(children: buttons.sublist(6, 9).map(_buildKey).toList()),
-          TableRow(children: buttons.sublist(9, 12).map(_buildKey).toList()),
+          TableRow(children: keys.sublist(0, 3).map(_cell).toList()),
+          TableRow(children: keys.sublist(3, 6).map(_cell).toList()),
+          TableRow(children: keys.sublist(6, 9).map(_cell).toList()),
+          TableRow(children: keys.sublist(9, 12).map(_cell).toList()),
         ],
       ),
     );
   }
 
-  Widget _buildKey(String value) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Theme.of(context).colorScheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          minimumSize: const Size(60, 60),
-        ),
-        onPressed: () {
-          if (value == "X") {
-            _deleteLastDigit();
-          } else {
-            _appendValue(value);
-          }
-        },
-        child: Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+  Widget _cell(String v) => Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: kPrimaryBlue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        minimumSize: const Size(60, 60),
       ),
-    );
-  }
+      onPressed: () {
+        if (v == 'X')
+          _del();
+        else
+          _append(v);
+      },
+      child: Text(
+        v,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
 }
