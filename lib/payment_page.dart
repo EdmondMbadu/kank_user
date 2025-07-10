@@ -1,13 +1,10 @@
-// payment_page_modern.dart – blue/red polish + Futa action
+// payment_page_modern.dart – v1.1 (clear amount after confirmation)
 import 'package:flutter/material.dart';
 
-/*───────────────────────────────────────────────────────────*/
-/* – Palette – */
 const Color kPrimaryBlue = Color(0xFF0A2A55);
 const Color kAccentRed = Color(0xFFD7263D);
 const Color kLightBlue = Color(0xFFF5F9FF);
 
-/*───────────────────────────────────────────────────────────*/
 class PaymentPage extends StatefulWidget {
   const PaymentPage({Key? key}) : super(key: key);
   @override
@@ -35,8 +32,7 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
-  /*──────── confirmation flow ────────*/
-  void _futa() async {
+  Future<void> _futa() async {
     final confirm = await showDialog<bool>(
       context: context,
       builder:
@@ -59,8 +55,9 @@ class _PaymentPageState extends State<PaymentPage> {
             ],
           ),
     );
+
     if (confirm == true) {
-      showDialog(
+      await showDialog(
         context: context,
         builder:
             (_) => AlertDialog(
@@ -74,10 +71,10 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
       );
+      setState(() => _amount = "0");
     }
   }
 
-  /*──────── UI ────────*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,10 +204,7 @@ class _PaymentPageState extends State<PaymentPage> {
         minimumSize: const Size(60, 60),
       ),
       onPressed: () {
-        if (v == 'X')
-          _del();
-        else
-          _append(v);
+        v == 'X' ? _del() : _append(v);
       },
       child: Text(
         v,
