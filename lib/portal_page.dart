@@ -1,12 +1,12 @@
-// portal_page_modern.dart – refreshed UI inspired by the Bank of America mobile look
+// portal_page_modern.dart – v2 with two large cards (Debt & Savings)
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
-/*– Brand palette (shared) –*/
+/*– Brand palette –*/
 const Color kPrimaryBlue = Color(0xFF0A2A55); // deep navy-blue
 const Color kAccentRed = Color(0xFFD7263D); // vivid red
 const Color kLightBlue = Color(0xFFE7F0FF); // soft background tint
-const Color kCardBorder = Color(0xFF123D7B); // subtle card border for neutrals
+const Color kBorderColor = Color(0xFF123D7B); // subtle card border
 
 /*───────────────────────────────────────────────────────────*/
 class PortalPage extends StatelessWidget {
@@ -48,8 +48,8 @@ class PortalPage extends StatelessWidget {
     if (s < 50) return kAccentRed;
     if (s < 70) return Colors.orange;
     if (s < 90) return Colors.amber;
-    return const Color(0xFF2ECC71); // green
-  }
+    return const Color(0xFF2ECC71);
+  } // green
 
   String _fmtNum(num v) {
     final s = v.toStringAsFixed(0);
@@ -77,15 +77,11 @@ class PortalPage extends StatelessWidget {
     final start = _parseDate(clientData['debtCycleStartDate'] ?? '');
     final end = start.add(Duration(days: (periodW * 7).toInt()));
     final overdue = DateTime.now().isAfter(end);
-
     final minWeek =
         periodW == 0
             ? debt
-            : (toPay / periodW) > debt
-            ? debt
-            : (toPay / periodW);
+            : ((toPay / periodW) > debt ? debt : (toPay / periodW));
 
-    /*─ Build ─*/
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -111,8 +107,6 @@ class PortalPage extends StatelessWidget {
           ),
         ],
       ),
-
-      /*── Gradient background ─*/
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -150,7 +144,6 @@ class PortalPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 /*── Greeting ─*/
                 RichText(
                   textAlign: TextAlign.center,
@@ -172,7 +165,6 @@ class PortalPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 26),
-
                 /*── Score ─*/
                 Align(
                   alignment: Alignment.center,
@@ -180,42 +172,20 @@ class PortalPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                /*── Accounts Section Title ─*/
+                /*── Accounts Section ─*/
                 _SectionHeader(title: 'Comptes'),
                 const SizedBox(height: 12),
 
-                /*── Money cards grid ─*/
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _MoneyCard(
-                      title: 'Niongo Ofuti',
-                      amount: '${_fmtNum(paid)} FC',
-                      accentColor: kPrimaryBlue,
-                    ),
-                    _MoneyCard(
-                      title: 'Niongo Etikali',
-                      amount: '${_fmtNum(debt)} FC',
-                      accentColor: kPrimaryBlue,
-                    ),
-                    _MoneyCard(
-                      title: 'Épargnes',
-                      amount: '${_fmtNum(savings)} FC',
-                      accentColor: kPrimaryBlue,
-                    ),
-                    _MoneyCard(
-                      title: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
-                      amount:
-                          overdue
-                              ? '${_fmtNum(debt)} FC'
-                              : '${_fmtNum(minWeek)} FC',
-                      accentColor: overdue ? kAccentRed : kPrimaryBlue,
-                      titleColor: overdue ? kAccentRed : kPrimaryBlue,
-                    ),
-                  ],
+                /*── Debt Card ─*/
+                _DebtCard(
+                  debtLeft: debt,
+                  alreadyPaid: paid,
+                  minWeekly: minWeek,
+                  overdue: overdue,
                 ),
+                const SizedBox(height: 20),
+                /*── Savings Card ─*/
+                _SavingsCard(savings: savings),
               ],
             ),
           ),
@@ -225,11 +195,10 @@ class PortalPage extends StatelessWidget {
   }
 }
 
-/*────────── Re-usable widgets ──────────*/
+/*────────── Widgets ──────────*/
 class _SectionHeader extends StatelessWidget {
   final String title;
   const _SectionHeader({required this.title});
-
   @override
   Widget build(BuildContext context) => Row(
     children: [
@@ -254,7 +223,6 @@ class _ScoreBadge extends StatelessWidget {
   final int score;
   final Color color;
   const _ScoreBadge({required this.score, required this.color});
-
   @override
   Widget build(BuildContext context) => Column(
     children: [
@@ -296,75 +264,132 @@ class _ScoreBadge extends StatelessWidget {
   );
 }
 
-class _MoneyCard extends StatelessWidget {
-  final String title;
-  final String amount;
-  final Color accentColor;
-  final Color? titleColor;
-  const _MoneyCard({
-    required this.title,
-    required this.amount,
-    required this.accentColor,
-    this.titleColor,
+class _DebtCard extends StatelessWidget {
+  final double debtLeft;
+  final double alreadyPaid;
+  final double minWeekly;
+  final bool overdue;
+  const _DebtCard({
+    required this.debtLeft,
+    required this.alreadyPaid,
+    required this.minWeekly,
+    required this.overdue,
   });
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: 170,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: kCardBorder.withOpacity(.1)),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(.06),
-          blurRadius: 8,
-          offset: const Offset(0, 4),
+  Widget build(BuildContext context) => Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    child: ExpansionTile(
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Niongo Etikali',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: kPrimaryBlue,
+            ),
+          ),
+          Text(
+            '${_fmtNumStatic(debtLeft)} FC',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: kPrimaryBlue,
+            ),
+          ),
+        ],
+      ),
+      children: [
+        const Divider(height: 1),
+        const SizedBox(height: 12),
+        _InfoRow(label: 'Déjà payé', value: '${_fmtNumStatic(alreadyPaid)} FC'),
+        const SizedBox(height: 8),
+        _InfoRow(
+          label: overdue ? '⚠️ Retard à payer' : 'Minimum hebdo',
+          value: '${_fmtNumStatic(overdue ? debtLeft : minWeekly)} FC',
+          valueColor: overdue ? kAccentRed : kPrimaryBlue,
         ),
       ],
     ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // accent line
-        Container(
-          height: 5,
-          decoration: BoxDecoration(
-            color: accentColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(18),
-              topRight: Radius.circular(18),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-          child: Column(
+  );
+}
+
+class _SavingsCard extends StatelessWidget {
+  final double savings;
+  const _SavingsCard({required this.savings});
+  @override
+  Widget build(BuildContext context) => Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
-                textAlign: TextAlign.center,
+                'Épargnes',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: titleColor ?? Colors.black54,
+                  color: Colors.grey[800],
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                amount,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: kPrimaryBlue,
-                ),
+              const SizedBox(height: 4),
+              const Text(
+                'Disponible',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ],
           ),
-        ),
-      ],
+          Text(
+            '${_fmtNumStatic(savings)} FC',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: kPrimaryBlue,
+            ),
+          ),
+        ],
+      ),
     ),
+  );
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+  const _InfoRow({required this.label, required this.value, this.valueColor});
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(label, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: valueColor ?? kPrimaryBlue,
+        ),
+      ),
+    ],
+  );
+}
+
+/*── Static formatter helper because _DebtCard is outside main class ─*/
+String _fmtNumStatic(num v) {
+  final s = v.toStringAsFixed(0);
+  return s.replaceAllMapped(
+    RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+    (m) => '${m[1]},',
   );
 }
