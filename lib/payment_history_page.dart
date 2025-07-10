@@ -1,4 +1,4 @@
-// payment_history_page_modern.dart – refreshed UI with white/blue/red theme
+// payment_history_page_modern.dart – v2.1 (Futa icon = money)
 import 'package:flutter/material.dart';
 
 /*───────────────────────────────────────────────────────────*/
@@ -16,7 +16,6 @@ class PaymentHistoryPage extends StatelessWidget {
     : super(key: key);
 
   /*──────────── Helpers ────────────*/
-  /// Parse timestamp key "M-D-YYYY-HH-MM-SS"
   DateTime _parseKey(String k) {
     final p = k.split('-').map((e) => int.tryParse(e) ?? 0).toList();
     return p.length >= 6
@@ -24,7 +23,6 @@ class PaymentHistoryPage extends StatelessWidget {
         : DateTime.now();
   }
 
-  /// Format: "Vendredi 18 Avril 2025 à 16:15"
   String _formatFr(DateTime d) {
     const days = [
       '',
@@ -58,7 +56,6 @@ class PaymentHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // build & sort entries
     final rawMap = clientData['payments'] as Map<String, dynamic>? ?? {};
     final List<PaymentEntry> entries =
         rawMap.entries
@@ -96,76 +93,88 @@ class PaymentHistoryPage extends StatelessWidget {
           ),
         ),
         child:
-            entries.isEmpty
+            (entries.isEmpty)
                 ? const Center(
                   child: Text(
                     'Aucun paiement enregistré',
                     style: TextStyle(fontSize: 16),
                   ),
                 )
-                : ListView.separated(
+                : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: entries.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, i) {
-                    final e = entries[i];
+                  itemCount: entries.length + 1, // +1 for header tile
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          _FutaShortcut(
+                            onTap: () {
+                              /* TODO: go to payment flow */
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    }
+                    final e = entries[index - 1];
                     final dateStr = _formatFr(e.key);
                     final amountStr = '${e.value.toStringAsFixed(0)} FC';
-
-                    return Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: kPrimaryBlue.withOpacity(.08),
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: InkWell(
+                          onTap: () {},
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: kPrimaryBlue.withOpacity(.08),
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              // red accent bar
-                              Container(
-                                width: 6,
-                                height: 80,
-                                decoration: const BoxDecoration(
-                                  color: kAccentRed,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                    bottomLeft: Radius.circular(16),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  title: Text(
-                                    dateStr,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: kPrimaryBlue,
-                                    ),
-                                  ),
-                                  trailing: Text(
-                                    amountStr,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: kPrimaryBlue,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 80,
+                                  decoration: const BoxDecoration(
+                                    color: kAccentRed,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    title: Text(
+                                      dateStr,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: kPrimaryBlue,
+                                      ),
+                                    ),
+                                    trailing: Text(
+                                      amountStr,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: kPrimaryBlue,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -175,4 +184,52 @@ class PaymentHistoryPage extends StatelessWidget {
       ),
     );
   }
+}
+
+/*────────── Shortcut tile ──────────*/
+class _FutaShortcut extends StatelessWidget {
+  final VoidCallback onTap;
+  const _FutaShortcut({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(18),
+    child: Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: kPrimaryBlue.withOpacity(.08)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.attach_money, size: 40, color: kPrimaryBlue),
+          const SizedBox(height: 8),
+          Text(
+            'Futa',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: kPrimaryBlue,
+            ),
+          ),
+          const SizedBox(height: 2),
+          const Text(
+            'Payer',
+            style: TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+        ],
+      ),
+    ),
+  );
 }
